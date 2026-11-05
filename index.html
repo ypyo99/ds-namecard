@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>디지털교육서포터즈 명함</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <!-- html2canvas 고해상도 이미지 변환 라이브러리 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- 서울시 심볼 Base64 데이터 -->
+  <script src="logo-data.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&family=Outfit:wght@700;800;900&display=swap');
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 2.5rem 1rem;
+    }
+
+    /* 명함 표준 규격: 900 x 500px (가로 9cm, 세로 5cm 비율 = 9:5) */
+    .card-container {
+      width: 900px;
+      height: 500px;
+      background-color: #faf9f6;
+      position: relative;
+      box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.18), 0 0 1px 1px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+      box-sizing: border-box;
+      border-radius: 6px;
+    }
+
+    /* 반응형: 화면 폭에 맞춰 명함 미리보기를 축소 (저장 이미지는 9x5cm 원본 크기 유지) */
+    #card-fit {
+      width: 900px;
+      height: 500px;
+      max-width: 100%;
+      position: relative;
+    }
+
+    #card-scale {
+      width: 900px;
+      height: 500px;
+      transform-origin: top left;
+    }
+
+    .font-eng {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* 이름 폰트색 회색조 조절 슬라이더 */
+    .name-color-slider {
+      background: linear-gradient(to right, #101828 0%, #334155 30%, #64748B 60%, #94A3B8 85%, #CBD5E1 100%);
+      outline: none;
+    }
+
+    .name-color-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid #13386E;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .name-color-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .name-color-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid #13386E;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 1.25rem 0.75rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 명함 정보 수정 및 다운로드 컨트롤 패널 -->
+  <div class="w-full max-w-[900px] bg-white rounded-2xl p-5 mb-6 shadow-md border border-slate-200/90">
+    <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+      <div class="flex items-center space-x-2">
+        <span class="flex h-3 w-3 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-[#13386E]"></span>
+        </span>
+        <h2 class="text-slate-800 font-bold text-base">명함 정보 수정 및 저장</h2>
+      </div>
+      <span class="text-xs text-slate-500 font-medium bg-slate-100 px-3 py-1 rounded-full">300DPI</span>
+    </div>
+
+    <div class="grid grid-cols-12 gap-3.5 items-end">
+      <!-- 성함 수정 -->
+      <div class="col-span-5 md:col-span-4">
+        <label for="input-name" class="block text-xs font-bold text-slate-700 mb-1.5">
+          <i class="fas fa-user text-[#13386E] mr-1"></i>선생님 성함
+        </label>
+        <input id="input-name" type="text" value="표영" placeholder="성함 입력"
+          class="w-full px-3.5 py-2 text-sm text-slate-900 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#13386E] focus:border-transparent transition-all font-medium">
+      </div>
+
+      <!-- 휴대폰 번호 수정 -->
+      <div class="col-span-7 md:col-span-4">
+        <label for="input-phone" class="block text-xs font-bold text-slate-700 mb-1.5">
+          <i class="fas fa-phone-alt text-[#13386E] mr-1"></i>휴대폰 번호
+        </label>
+        <input id="input-phone" type="text" value="010-2687-7190" placeholder="010-0000-0000"
+          class="w-full px-3.5 py-2 text-sm text-slate-900 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#13386E] focus:border-transparent transition-all font-medium">
+      </div>
+
+      <!-- JPG 다운로드 버튼 -->
+      <div class="col-span-12 md:col-span-4">
+        <button id="btn-download"
+          class="w-full py-2 px-4 bg-[#13386E] hover:bg-[#1a4484] active:scale-[0.98] text-white text-sm font-bold rounded-xl shadow-md transition-all flex items-center justify-center space-x-2">
+          <i class="fas fa-download text-xs"></i>
+          <span>고해상도 JPG 다운로드</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 이름 폰트색 (회색계열) 슬라이더 컨트롤 바 -->
+    <div class="mt-3.5 p-3 bg-slate-50/90 rounded-xl border border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
+      <div class="flex items-center space-x-2 shrink-0">
+        <label for="range-name-color" class="text-xs font-bold text-slate-700 flex items-center gap-1.5 cursor-pointer">
+          <i class="fas fa-palette text-[#13386E] text-xs"></i>
+          <span>이름 폰트색 (회색계열)</span>
+        </label>
+        <span id="preview-name-color" class="w-4 h-4 rounded-full border border-slate-300 shadow-xs inline-block" style="background-color: #252E3F;"></span>
+        <span id="badge-name-color" class="text-[11px] font-extrabold text-[#13386E] font-mono bg-white border border-slate-200 px-2 py-0.5 rounded">#252E3F (다크 차콜)</span>
+      </div>
+
+      <div class="flex-1 flex items-center space-x-2.5 max-w-[420px]">
+        <span class="text-[10px] font-bold text-slate-500 whitespace-nowrap">블랙</span>
+        <div class="relative flex-1 flex items-center">
+          <input type="range" id="range-name-color" min="0" max="100" step="1" value="16"
+            class="w-full h-2 rounded-lg appearance-none cursor-pointer name-color-slider"
+            title="이름 폰트색 회색조 조절 슬라이더">
+        </div>
+        <span class="text-[10px] font-bold text-slate-500 whitespace-nowrap">밝은 회색</span>
+      </div>
+
+      <!-- 빠른 회색 프리셋 버튼 -->
+      <div class="flex items-center space-x-1 shrink-0">
+        <button type="button" class="btn-gray-preset px-2 py-1 text-[11px] font-bold bg-blue-50 border border-blue-200 rounded-lg text-[#13386E] shadow-xs transition-all active:scale-95" data-val="16">다크 차콜(#252E3F)</button>
+        <button type="button" class="btn-gray-preset px-2 py-1 text-[11px] font-medium bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-slate-700 shadow-xs transition-all active:scale-95" data-val="0">기본 블랙</button>
+      </div>
+    </div>
+
+    <!-- 컴포넌트별 크기 조절 컨트롤러 섹션 -->
+    <div class="mt-4 pt-3.5 border-t border-slate-100">
+      <div class="flex items-center justify-between mb-2.5">
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-sliders-h text-[#13386E] text-xs"></i>
+          <span class="text-xs font-bold text-slate-700">각 컴포넌트 크기 조절</span>
+          <span class="text-[11px] text-slate-400 hidden sm:inline">(버튼을 클릭하거나 꾹 누르면 연속 조절됩니다)</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <!-- 이 값을 기본값으로 하는 버튼 -->
+          <button id="btn-save-default" type="button"
+            class="text-[11px] text-white bg-[#13386E] hover:bg-[#1a4484] active:scale-95 transition-all flex items-center space-x-1.5 py-1 px-3 rounded-lg font-bold shadow-xs" title="현재 설정된 크기들과 폰트색을 영구 기본값으로 저장합니다">
+            <i class="fas fa-bookmark text-[10px]"></i>
+            <span>이 값을 기본값으로 저장</span>
+          </button>
+          <!-- 최적 추천값 복원 버튼 -->
+          <button id="btn-apply-optimal" type="button"
+            class="text-[11px] text-[#13386E] bg-blue-50 hover:bg-blue-100 active:scale-95 transition-all flex items-center space-x-1 py-1 px-2.5 rounded-lg font-bold border border-blue-200" title="로고 60px, 성함 58px, 직책 33px, 부제 21px, 연락처 29.5px, 다크차콜 최적값 적용">
+            <i class="fas fa-star text-[10px] text-amber-500"></i>
+            <span>추천 최적값</span>
+          </button>
+          <!-- 기본값 복원 버튼 -->
+          <button id="btn-reset-sizes" type="button"
+            class="text-[11px] text-slate-600 hover:text-[#13386E] active:scale-95 transition-all flex items-center space-x-1 py-1 px-2 rounded-lg bg-slate-100 hover:bg-slate-200 font-medium border border-slate-200" title="저장된 기본값으로 복원">
+            <i class="fas fa-undo-alt text-[10px]"></i>
+            <span>기본값 복원</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 6개 컴포넌트 크기 조절 카드 그리드 -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+
+        <!-- 1. 로고 크기 (60px) -->
+        <div class="bg-slate-50/90 hover:bg-slate-100/80 transition-colors p-2.5 rounded-xl border border-slate-200/80 flex flex-col justify-between shadow-xs">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[11px] font-bold text-slate-700 flex items-center gap-1">
+              <i class="fas fa-landmark text-[#13386E] text-[10px]"></i>로고
+            </span>
+            <span id="badge-size-logo" class="text-[11px] font-extrabold text-[#13386E] bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono">60px</span>
+          </div>
+          <div class="flex items-center space-x-1 mb-1.5">
+            <button type="button" class="btn-ctrl-size flex-1 py-1 bg-white hover:bg-blue-50 active:scale-90 border border-slate-200 rounded-lg text-slate-700 hover:text-[#13386E] font-bold text-xs shadow-xs transition-all flex items-center justify-center select-none" data-target="logo" data-delta="-2" title="로고 축소">
+              <i class="fas fa-minus text-[9px] pointer-events-none"></i>
+            </button>
+            <button type="button" class="btn-ctrl-size flex-1 py-1 bg-white hover:bg-blue-50 active:scale-90 border border-slate-200 rounded-lg text-slate-700 hover:text-[#13386E] font-bold text-xs shadow-xs transition-all flex items-center justify-center select-none" data-target="logo" data-delta="2" title="로고 확대">
+              <i class="fas fa-plus text-[9px] pointer-events-none"></i>
+            </button>
+          </div>
+          <input type="range" id="range-logo" min="24" max="110" step="1" value="60"
+            class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#13386E]">
+        </div>
+
+        <!-- 2. 기관명 크기 (27px) -->
+        <div class="bg-slate-50/90 hover:bg-slate-100/80 transition-colors p-2.5 rounded-xl border border-slate-200/80 flex flex-col justify-between shadow-xs">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[11px] font-bold text-slate-700 flex items-center gap-1">
+              <i class="fas fa-building text-[#13386E] text-[10px]"></i>기관명
+            </span>
+            <span id="badge-size-org" class="text-[11px] font-extrabold text-[#13386E] bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono">27px</span>
+          </div>
+          <div class="flex items-center space-x-1 mb-1.5">
+            <button type="button" class="btn-ctrl-size flex-1 py-1 bg-white hover:bg-blue-50 active:scale-90 border border-slate-200 rounded-lg text-slate-700 hover:text-[#13386E] font-bold text-xs shadow-xs transition-all flex items-center justify-center select-none" data-target="org" data-delta="-1" title="기관명 축소">
+              <i class="fas fa-minus text-[9px] pointer-events-none"></i>
+            </button>
+            <button type="button" class="btn-ctrl-size flex-1 py-1 bg-white hover:bg-blue-50 active:scale-90 border border-slate-200 rounded-lg text-slate-700 hover:text-[#13386E] font-bold text-xs shadow-xs transition-all flex items-center justify-center select-none" data-target="org" data-delta="1" title="기관명 확대">
+              <i class="fas fa-plus text-[9px] pointer-events-none"></i>
+            </button>
+          </div>
+          <input type="range" id="range-org" min="14" max="42" step="1" value="27"
+            class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#13386E]">
+        </div>
+
+        <!-- 3. 성함 크기 (58px) -->
+        <div class="bg-slate-50/90 hover:bg-slate-100/80 transition-colors p-2.5 rounded-xl border border-slate-200/80 flex flex-col justify-between shadow-xs">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[11px] font-bold text-slate-700 flex items-center gap-1">
+              <i class="fas fa-user text-[#13386E] text-[10px]"></i>성함
+            </span>
+            <span id="badge-size-name" class="text-[11px] font-extrabold text-[#13386E] bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono">58px</span>
+          </div>
+          <div class="flex items-center space-x-1 mb-1.5">
+            <button type="button" class="btn-ctrl-size flex-1 py-1 bg-white hover:bg-blue-50 active:scale-90 border border-slate-200 rounded-lg text-slate-700 hover:text-[#13386E] font-bold text-xs shadow-xs transition-all flex items-center justify-center select-none" data-target="name" data-delta="-2" title="성함 축소">
+              <i class="fas fa-minus text-[9px] pointer-events-none"></i>
+            </button>
+            <button type="button" class="btn-ctrl-size flex-1 py-1 bg-white hover:bg-blue-50 active:scale-90 border border-slate-200 rounded-lg text-slate-700 hover:text-[#13386E] font-bold text-xs shadow-xs transition-all flex items-center justify-center select-none" data-target="name" data-delta="2" title="성함 확대">
+              <i class="fas fa-plus text-[9px] pointer-events-none"></i>
+            </button>
+          </div>
+          <input type="range" id="range-name" min="24" max="78" step="1" value="58"
+            class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#13386E]">
+        </div>
+
+        <!-- 4. 직책 크기 (33px) -->
+        <div class="bg-slate-50/90 hover:bg-slate-100/80 transition-colors p-2.5 rounded-xl border border-slate-200/80 flex flex-col justify-between shadow-xs">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[11px] font-bold text-slate-700 flex items-center gap-1">
+              <i class="fas fa-id-badge text-[#13386E] text-[10px]"></i>직책
+            </span>
+            <span id="badge-size-title" class="text-[11px] font-extrabold text-[#13386E] bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono">33px</span>
+          </div>
+          <div class="flex items-center space-x-1 mb-1.5">
+            <button type="button" class="btn-ctrl-size flex-1 py-1 bg-white hover:bg-blue-50 active:scale-90 border border-slate-200 rounded-lg text-slate-700 hover:text-[#13386E] font-bold text-xs shadow-xs transition-all flex items-center justify-center select-none" data-target="title" data-delta="-1" title="직책 축소">
+              <i class="fas fa-minus text-[9px] pointer-events-none"></i>
+            </button>
+            <button type="button" class="btn-ctrl-size flex-1 py-1 bg-white hover:bg-blue-50 active:scale-90 border border-slate-200 rounded-lg text-slate-700 hover:text-[#13386E] font-bold text-xs shadow-xs transition-all flex items-center justify-center select-none" data-target="title" data-delta="1" title="직책 확대">
+              <i class="fas fa-plus text-[9px] pointer-events-none"></i>
+            </button>
+          </div>
+          <input type="range" id="range-title" min="14" max="42" step="1" value="33"
+            class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#13386E]">
+        </div>
+
+        <!-- 5. 부제/슬로건 크기 (21px) -->
+        <div class="bg-slate-50/90 hover:bg-slate-100/80 transition-colors p-2.5 rounded-xl border border-slate-200/80 flex flex-col justify-between shadow-xs">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[11px] font-bold text-slate-700 flex items-center gap-1">
+              <i class="fas fa-quote-left text-[#13386E] text-[10px]"></i>부제문구
+            </span>
+            <span id="badge-size-slogan" class="text-[11px] font-extrabold text-[#13386E] bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono">21px</span>
+          </div>
+          <div class="flex items-center space-x-1 mb-1.5">
+            <button type="button" class="btn-ctrl-size flex-1 py-1 bg-white hover:bg-blue-50 active:scale-90 border border-slate-200 rounded-lg text-slate-700 hover:text-[#13386E] font-bold text-xs shadow-xs transition-all flex items-center justify-center select-none" data-target="slogan" data-delta="-1" title="부제 축소">
+              <i class="fas fa-minus text-[9px] pointer-events-none"></i>
+            </button>
+            <button type="button" class="btn-ctrl-size flex-1 py-1 bg-white hover:bg-blue-50 active:scale-90 border border-slate-200 rounded-lg text-slate-700 hover:text-[#13386E] font-bold text-xs shadow-xs transition-all flex items-center justify-center select-none" data-target="slogan" data-delta="1" title="부제 확대">
+              <i class="fas fa-plus text-[9px] pointer-events-none"></i>
+            </button>
+          </div>
+          <input type="range" id="range-slogan" min="11" max="28" step="1" value="21"
+            class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#13386E]">
+        </div>
+
+        <!-- 6. 연락처 크기 (29.5px) -->
+        <div class="bg-slate-50/90 hover:bg-slate-100/80 transition-colors p-2.5 rounded-xl border border-slate-200/80 flex flex-col justify-between shadow-xs">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[11px] font-bold text-slate-700 flex items-center gap-1">
+              <i class="fas fa-phone-alt text-[#13386E] text-[10px]"></i>연락처
+            </span>
+            <span id="badge-size-contact" class="text-[11px] font-extrabold text-[#13386E] bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono">29.5px</span>
+          </div>
+          <div class="flex items-center space-x-1 mb-1.5">
+            <button type="button" class="btn-ctrl-size flex-1 py-1 bg-white hover:bg-blue-50 active:scale-90 border border-slate-200 rounded-lg text-slate-700 hover:text-[#13386E] font-bold text-xs shadow-xs transition-all flex items-center justify-center select-none" data-target="contact" data-delta="-1" title="연락처 축소">
+              <i class="fas fa-minus text-[9px] pointer-events-none"></i>
+            </button>
+            <button type="button" class="btn-ctrl-size flex-1 py-1 bg-white hover:bg-blue-50 active:scale-90 border border-slate-200 rounded-lg text-slate-700 hover:text-[#13386E] font-bold text-xs shadow-xs transition-all flex items-center justify-center select-none" data-target="contact" data-delta="1" title="연락처 확대">
+              <i class="fas fa-plus text-[9px] pointer-events-none"></i>
+            </button>
+          </div>
+          <input type="range" id="range-contact" min="14" max="38" step="0.5" value="29.5"
+            class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#13386E]">
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 명함 본체 (900x500px, 9:5 비율) -->
+  <div id="card-fit">
+    <div id="card-scale">
+      <div id="business-card" class="card-container">
+
+        <!-- 우측 네이비 테크/궤도 패널 (SVG: 폭 250px, 높이 500px) -->
+        <!-- 우측 하단의 Gemini 워터마크 표시(4각 별표)는 완전히 제거되었습니다. -->
+        <svg id="deco-svg" data-html2canvas-ignore="true"
+          class="absolute top-0 right-0 w-[250px] h-[500px] pointer-events-none" viewBox="0 0 250 500"
+          xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <!-- 베이스 딥 네이비 그라데이션 -->
+            <linearGradient id="panelBaseGrad" x1="0" y1="0" x2="0.3" y2="1">
+              <stop offset="0%" stop-color="#1B3A6F" />
+              <stop offset="45%" stop-color="#122B55" />
+              <stop offset="100%" stop-color="#08142D" />
+            </linearGradient>
+            <!-- 우측 상단 은은한 하이라이트 글로우 -->
+            <radialGradient id="topHighlight" cx="0.85" cy="0.08" r="0.75">
+              <stop offset="0%" stop-color="#416EA8" stop-opacity="0.55" />
+              <stop offset="60%" stop-color="#1B3A6F" stop-opacity="0" />
+            </radialGradient>
+          </defs>
+
+          <!-- 배경 사각형 -->
+          <rect width="250" height="500" fill="url(#panelBaseGrad)" />
+          <rect width="250" height="500" fill="url(#topHighlight)" />
+
+          <!-- 동심 궤도 음영층 (입체감 있는 곡선 크레센트 밴드) -->
+          <circle cx="254" cy="510" r="238" fill="#18437D" opacity="0.52" />
+          <circle cx="254" cy="510" r="135" fill="#0E234A" opacity="0.72" />
+          <circle cx="254" cy="510" r="80" fill="#07122A" opacity="0.88" />
+
+          <!-- 동심 궤도 라인 (Orbit Arcs) -->
+          <!-- 1. 가장 바깥쪽 궤도 -->
+          <circle cx="254" cy="510" r="290" fill="none" stroke="#507EBA" stroke-width="1.2" opacity="0.35" />
+          <!-- 2. 중간 궤도 (크레센트 경계선) -->
+          <circle cx="254" cy="510" r="238" fill="none" stroke="#5C8BCC" stroke-width="1.3" opacity="0.45" />
+          <!-- 3. 주 궤도 (오렌지 행성이 위치한 메인 라인) -->
+          <circle cx="254" cy="510" r="178" fill="none" stroke="#7BA8E8" stroke-width="1.6" opacity="0.75" />
+          <!-- 4. 안쪽 궤도 1 -->
+          <circle cx="254" cy="510" r="116" fill="none" stroke="#507EBA" stroke-width="1.3" opacity="0.45" />
+          <!-- 5. 안쪽 궤도 2 -->
+          <circle cx="254" cy="510" r="66" fill="none" stroke="#507EBA" stroke-width="1.2" opacity="0.30" />
+
+          <!-- 주 궤도 위 오렌지 행성 포인트 -->
+          <circle cx="110" cy="405" r="9.5" fill="#F58220" />
+
+          <!-- 상단 오렌지 캡슐 바 -->
+          <rect x="42" y="48" width="40" height="5" rx="2.5" fill="#F58220" />
+
+          <!-- 상단 3줄 영문 타이틀 (Outfit 폰트, 자간 3.2px, 볼드 화이트) -->
+          <text x="42" y="80" fill="#FFFFFF" font-family="'Outfit', sans-serif" font-weight="800" font-size="16"
+            letter-spacing="3.2">DIGITAL</text>
+          <text x="42" y="106" fill="#FFFFFF" font-family="'Outfit', sans-serif" font-weight="800" font-size="16"
+            letter-spacing="3.2">EDUCATION</text>
+          <text x="42" y="132" fill="#FFFFFF" opacity="0.88" font-family="'Outfit', sans-serif" font-weight="800"
+            font-size="16" letter-spacing="3.2">SUPPORTERS</text>
+        </svg>
+
+        <!-- 좌측 메인 콘텐츠 영역 (폭 650px) -->
+        <div class="h-full flex flex-col justify-between pt-[40px] pb-[38px] pl-[60px] pr-[270px]">
+
+          <!-- 1. 헤더 영역 (서울시 삼색 심볼 로고 & 기관명) -->
+          <div class="flex items-center">
+            <img id="card-logo" src="서울시 심볼.png" alt="서울시 로고" class="h-[60px] w-auto mr-[18px] object-contain">
+            <div>
+              <div id="card-org-sub" class="text-[18.5px] font-medium text-[#1E2530] leading-none mb-1.5 tracking-[-0.01em]">사회복지법인
+                서울가톨릭사회복지회</div>
+              <div id="card-org-main" class="text-[27px] font-extrabold text-[#101726] leading-none tracking-[-0.02em]">시립성동노인종합복지관</div>
+            </div>
+          </div>
+
+          <!-- 2. 중앙 메인 텍스트 영역 (성함, 직책, 부제) -->
+          <div class="mt-1">
+            <div class="flex items-baseline flex-wrap">
+              <div id="card-name"
+                class="text-[58px] font-black tracking-[0.25em] text-[#252E3F] leading-none whitespace-nowrap">표 영</div>
+              <div id="card-title"
+                class="text-[33px] font-extrabold text-[#13386E] ml-6 whitespace-nowrap tracking-[-0.01em] pb-0.5">
+                디지털교육서포터즈</div>
+            </div>
+            <div id="card-slogan" class="text-[21px] font-medium text-[#1E2738] mt-3.5 tracking-[-0.01em]">배우는 기쁨, 쓰는 즐거움! 디지털로 일상에 재미를
+              더해 드려요</div>
+          </div>
+
+          <!-- 3. 구분선 및 하단 연락처 영역 -->
+          <div>
+            <!-- 가로 구분선 (연회색 1.5px) -->
+            <div class="w-[530px] border-t-[1.5px] border-[#CBD5E1] mb-5"></div>
+
+            <div class="flex flex-col space-y-3">
+              <!-- 휴대폰 번호 행 -->
+              <div class="flex items-center">
+                <!-- 휴대폰 픽토그램 (송수화기 + 2개 음파 신호) -->
+                <svg class="contact-icon w-[26.5px] h-[26.5px] text-[#13386E] shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <!-- 45도 기울어진 송수화기 본체 -->
+                  <path
+                    d="M4.5 7.2c.2-1.5 1.5-2.6 3-2.3l1.8.4c1.1.2 1.9 1.2 1.8 2.3l-.4 1.6c-.2.7-.6 1.2-1.2 1.4-.2.1-.5.3-.7.5 1.1 2.2 2.9 4 5.1 5.1.2-.2.4-.5.5-.7.2-.6.7-1 1.4-1.2l1.6-.4c1.1-.2 2.1.6 2.3 1.8l.4 1.8c.3 1.5-.8 2.8-2.3 3-1.3.2-2.7.1-4.2-.6-3.3-1.5-6.1-4.3-7.6-7.6-.7-1.5-.8-2.9-.6-4.2z" />
+                  <!-- 음파 아크 1 (내측) -->
+                  <path d="M15 7c1.3.7 2.3 1.7 3 3" fill="none" stroke="#13386E" stroke-width="2.6"
+                    stroke-linecap="round" />
+                  <!-- 음파 아크 2 (외측) -->
+                  <path d="M15 3.5c2.9.9 5.3 3.3 6.2 6.2" fill="none" stroke="#13386E" stroke-width="2.6"
+                    stroke-linecap="round" />
+                </svg>
+                <span class="contact-label text-[20.5px] font-bold text-[#13386E] ml-3 mr-4 tracking-[-0.01em]">휴대폰</span>
+                <span id="card-phone"
+                  class="text-[29.5px] font-extrabold text-[#0A0F1D] tracking-[0.03em] font-sans">010-2687-7190</span>
+              </div>
+
+              <!-- 복지관 번호 행 -->
+              <div class="flex items-center">
+                <!-- 복지관 빌딩 픽토그램 (본관 격자창문/출입문 + 우측 별관 3층) -->
+                <svg class="contact-icon w-[26.5px] h-[26.5px] text-[#13386E] shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <!-- 본관 건물 본체 -->
+                  <rect x="2" y="2.5" width="12" height="19" rx="0.6" />
+                  <!-- 출입구 도어 (화이트 컷아웃) -->
+                  <rect x="6.5" y="15.5" width="3" height="6" fill="#faf9f6" />
+                  <!-- 본관 창문 6개 (화이트) -->
+                  <rect x="4.2" y="5" width="2.8" height="2.8" rx="0.3" fill="#faf9f6" />
+                  <rect x="9" y="5" width="2.8" height="2.8" rx="0.3" fill="#faf9f6" />
+                  <rect x="4.2" y="8.8" width="2.8" height="2.8" rx="0.3" fill="#faf9f6" />
+                  <rect x="9" y="8.8" width="2.8" height="2.8" rx="0.3" fill="#faf9f6" />
+                  <rect x="4.2" y="12.6" width="2.8" height="2.8" rx="0.3" fill="#faf9f6" />
+                  <rect x="9" y="12.6" width="2.8" height="2.8" rx="0.3" fill="#faf9f6" />
+                  <!-- 우측 별관 건물 본체 -->
+                  <rect x="15.2" y="8" width="6" height="13.5" rx="0.6" />
+                  <!-- 별관 창문 3개 (화이트) -->
+                  <rect x="17" y="10" width="2.4" height="2.4" rx="0.3" fill="#faf9f6" />
+                  <rect x="17" y="13.5" width="2.4" height="2.4" rx="0.3" fill="#faf9f6" />
+                  <rect x="17" y="17" width="2.4" height="2.4" rx="0.3" fill="#faf9f6" />
+                  <!-- 건물 바닥 받침선 -->
+                  <rect x="1" y="20.5" width="22" height="1.8" rx="0.4" />
+                </svg>
+                <span class="contact-label text-[20.5px] font-bold text-[#13386E] ml-3 mr-4 tracking-[-0.01em]">복지관</span>
+                <span id="card-tel"
+                  class="text-[29.5px] font-extrabold text-[#0A0F1D] tracking-[0.03em] font-sans">02-2298-5117</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1. 서울시 심볼 Base64 적용 (로컬 환경에서 캔버스 오염 방지)
+    const logoImg = document.getElementById('card-logo');
+    if (typeof SEOUL_SYMBOL_BASE64 !== 'undefined' && logoImg) {
+      logoImg.src = SEOUL_SYMBOL_BASE64;
+    }
+
+    // 2. 반응형 스케일: 컨테이너 폭에 맞춰 명함 축소 (가로 900 x 세로 500 = 9cm x 5cm 비율)
+    const cardFit = document.getElementById('card-fit');
+    const cardScale = document.getElementById('card-scale');
+    function fitCard() {
+      const avail = Math.min(900, document.body.clientWidth - 32);
+      const k = Math.min(1, avail / 900);
+      cardScale.style.transform = `scale(${k})`;
+      cardFit.style.width = (900 * k) + 'px';
+      cardFit.style.height = (500 * k) + 'px';
+    }
+    fitCard();
+    window.addEventListener('resize', fitCard);
+
+    // 3. 입력 필드 실시간 동기화 및 글자 수에 따른 자간 자동 조절
+    const inputName = document.getElementById('input-name');
+    const inputPhone = document.getElementById('input-phone');
+    const cardName = document.getElementById('card-name');
+    const cardPhone = document.getElementById('card-phone');
+    const btnDownload = document.getElementById('btn-download');
+
+    // 최적 기본값 프리셋 (사용자 설정값: 로고 60px, 기관명 27px, 성함 58px, 직책 33px, 부제 21px, 연락처 29.5px, 이름색 다크차콜 #252E3F)
+    const OPTIMAL_PRESET = {
+      sizes: {
+        logo: 60,
+        org: 27,
+        name: 58,
+        title: 33,
+        slogan: 21,
+        contact: 29.5
+      },
+      nameColorPercent: 16 // #252E3F (다크 차콜)
+    };
+
+    // 4. 각 컴포넌트별 크기 조절 관리
+    const COMPONENT_CONFIGS = {
+      logo: {
+        default: 60,
+        min: 24,
+        max: 110,
+        step: 2,
+        unit: 'px',
+        apply: (val) => {
+          const el = document.getElementById('card-logo');
+          if (el) el.style.height = `${val}px`;
+        }
+      },
+      org: {
+        default: 27,
+        min: 14,
+        max: 42,
+        step: 1,
+        unit: 'px',
+        apply: (val) => {
+          const mainEl = document.getElementById('card-org-main');
+          const subEl = document.getElementById('card-org-sub');
+          if (mainEl) mainEl.style.fontSize = `${val}px`;
+          if (subEl) subEl.style.fontSize = `${(val * (18.5 / 27)).toFixed(1)}px`;
+        }
+      },
+      name: {
+        default: 58,
+        min: 24,
+        max: 78,
+        step: 2,
+        unit: 'px',
+        apply: (val) => {
+          if (cardName) cardName.style.fontSize = `${val}px`;
+        }
+      },
+      title: {
+        default: 33,
+        min: 14,
+        max: 42,
+        step: 1,
+        unit: 'px',
+        apply: (val) => {
+          const el = document.getElementById('card-title');
+          if (el) el.style.fontSize = `${val}px`;
+        }
+      },
+      slogan: {
+        default: 21,
+        min: 11,
+        max: 28,
+        step: 1,
+        unit: 'px',
+        apply: (val) => {
+          const el = document.getElementById('card-slogan');
+          if (el) el.style.fontSize = `${val}px`;
+        }
+      },
+      contact: {
+        default: 29.5,
+        min: 14,
+        max: 38,
+        step: 0.5,
+        unit: 'px',
+        apply: (val) => {
+          const phoneEl = document.getElementById('card-phone');
+          const telEl = document.getElementById('card-tel');
+          if (phoneEl) phoneEl.style.fontSize = `${val}px`;
+          if (telEl) telEl.style.fontSize = `${val}px`;
+
+          const labels = document.querySelectorAll('.contact-label');
+          const labelSize = (val * (18.5 / 26.5)).toFixed(1);
+          labels.forEach(el => el.style.fontSize = `${labelSize}px`);
+
+          const icons = document.querySelectorAll('.contact-icon');
+          const iconSize = (val * (24 / 26.5)).toFixed(1);
+          icons.forEach(el => {
+            el.style.width = `${iconSize}px`;
+            el.style.height = `${iconSize}px`;
+          });
+        }
+      }
+    };
+
+    const currentSizes = {};
+
+    function setComponentSize(key, val, updateRange = true) {
+      const cfg = COMPONENT_CONFIGS[key];
+      if (!cfg) return;
+      const clamped = Math.max(cfg.min, Math.min(cfg.max, Math.round(val * 10) / 10));
+      currentSizes[key] = clamped;
+      cfg.apply(clamped);
+
+      const badge = document.getElementById(`badge-size-${key}`);
+      if (badge) badge.textContent = `${clamped}${cfg.unit}`;
+
+      if (updateRange) {
+        const range = document.getElementById(`range-${key}`);
+        if (range) range.value = clamped;
+      }
+    }
+
+    // 슬라이더 및 증감 버튼 바인딩
+    Object.keys(COMPONENT_CONFIGS).forEach(key => {
+      const range = document.getElementById(`range-${key}`);
+      if (range) {
+        range.addEventListener('input', (e) => {
+          setComponentSize(key, parseFloat(e.target.value), false);
+        });
+      }
+    });
+
+    // 버튼 연속 클릭 및 롱프레스(누르고 있기) 지원
+    let pressTimer = null;
+    let pressInterval = null;
+
+    function startAdjusting(target, delta) {
+      stopAdjusting();
+      const cur = currentSizes[target] !== undefined ? currentSizes[target] : COMPONENT_CONFIGS[target].default;
+      setComponentSize(target, cur + delta, true);
+
+      pressTimer = setTimeout(() => {
+        pressInterval = setInterval(() => {
+          const c = currentSizes[target] !== undefined ? currentSizes[target] : COMPONENT_CONFIGS[target].default;
+          setComponentSize(target, c + delta, true);
+        }, 70);
+      }, 300);
+    }
+
+    function stopAdjusting() {
+      if (pressTimer) {
+        clearTimeout(pressTimer);
+        pressTimer = null;
+      }
+      if (pressInterval) {
+        clearInterval(pressInterval);
+        pressInterval = null;
+      }
+    }
+
+    document.querySelectorAll('.btn-ctrl-size').forEach(btn => {
+      const target = btn.dataset.target;
+      const delta = parseFloat(btn.dataset.delta);
+
+      btn.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        startAdjusting(target, delta);
+      });
+      btn.addEventListener('mouseup', stopAdjusting);
+      btn.addEventListener('mouseleave', stopAdjusting);
+
+      btn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        startAdjusting(target, delta);
+      }, { passive: false });
+      btn.addEventListener('touchend', stopAdjusting);
+      btn.addEventListener('touchcancel', stopAdjusting);
+    });
+
+    // 5. 이름 폰트색 (회색계열) 슬라이더 컨트롤
+    let currentNameColorHex = '#252E3F';
+    let currentNameColorPercent = 16;
+
+    function calculateGrayColor(percent) {
+      const t = Math.max(0, Math.min(100, percent)) / 100;
+      // 시작: #101828 (16, 24, 40) -> 종료: #94A3B8 (148, 163, 184)
+      const r = Math.round(16 + (148 - 16) * t);
+      const g = Math.round(24 + (163 - 24) * t);
+      const b = Math.round(40 + (184 - 40) * t);
+      const hex = '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0').toUpperCase()).join('');
+
+      let desc = '기본 블랙';
+      if (percent === 0) desc = '기본 블랙';
+      else if (percent < 25) desc = '다크 차콜';
+      else if (percent < 50) desc = '딥 그레이';
+      else if (percent < 75) desc = '미디엄 그레이';
+      else desc = '라이트 그레이';
+
+      return { hex, desc };
+    }
+
+    function setNameColor(percent, updateSlider = true) {
+      currentNameColorPercent = percent;
+      const { hex, desc } = calculateGrayColor(percent);
+      currentNameColorHex = hex;
+
+      if (cardName) {
+        cardName.style.color = hex;
+      }
+
+      const preview = document.getElementById('preview-name-color');
+      const badge = document.getElementById('badge-name-color');
+      if (preview) preview.style.backgroundColor = hex;
+      if (badge) badge.textContent = `${hex} (${desc})`;
+
+      if (updateSlider) {
+        const slider = document.getElementById('range-name-color');
+        if (slider) slider.value = percent;
+      }
+    }
+
+    const rangeNameColor = document.getElementById('range-name-color');
+    if (rangeNameColor) {
+      rangeNameColor.addEventListener('input', (e) => {
+        setNameColor(parseFloat(e.target.value), false);
+      });
+    }
+
+    document.querySelectorAll('.btn-gray-preset').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = parseFloat(btn.dataset.val);
+        setNameColor(val, true);
+      });
+    });
+
+    // 6. 기본값 저장 및 불러오기 (localStorage 연동)
+    const STORAGE_KEY = 'ds_card_custom_defaults_v1';
+
+    function saveCurrentAsDefault() {
+      const customDefault = {
+        sizes: { ...currentSizes },
+        nameColorPercent: currentNameColorPercent
+      };
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(customDefault));
+      } catch (e) {
+        console.warn('localStorage 저장 실패:', e);
+      }
+
+      // 버튼 피드백
+      const btn = document.getElementById('btn-save-default');
+      if (btn) {
+        const origHtml = btn.innerHTML;
+        btn.classList.remove('bg-[#13386E]', 'hover:bg-[#1a4484]');
+        btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+        btn.innerHTML = `<i class="fas fa-check-circle text-[10px]"></i><span>기본값으로 저장 완료!</span>`;
+        setTimeout(() => {
+          btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+          btn.classList.add('bg-[#13386E]', 'hover:bg-[#1a4484]');
+          btn.innerHTML = origHtml;
+        }, 1600);
+      }
+    }
+
+    function getActiveDefaults() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.sizes) return parsed;
+        }
+      } catch (e) {
+        console.warn('localStorage 읽기 실패:', e);
+      }
+      return OPTIMAL_PRESET;
+    }
+
+    function applyPreset(preset) {
+      const target = preset || getActiveDefaults();
+      Object.keys(COMPONENT_CONFIGS).forEach(key => {
+        const val = (target.sizes && target.sizes[key] !== undefined)
+          ? target.sizes[key]
+          : COMPONENT_CONFIGS[key].default;
+        setComponentSize(key, val, true);
+      });
+      const colorVal = target.nameColorPercent !== undefined
+        ? target.nameColorPercent
+        : OPTIMAL_PRESET.nameColorPercent;
+      setNameColor(colorVal, true);
+    }
+
+    const btnSaveDefault = document.getElementById('btn-save-default');
+    if (btnSaveDefault) {
+      btnSaveDefault.addEventListener('click', saveCurrentAsDefault);
+    }
+
+    const btnApplyOptimal = document.getElementById('btn-apply-optimal');
+    if (btnApplyOptimal) {
+      btnApplyOptimal.addEventListener('click', () => applyPreset(OPTIMAL_PRESET));
+    }
+
+    const btnResetSizes = document.getElementById('btn-reset-sizes');
+    if (btnResetSizes) {
+      btnResetSizes.addEventListener('click', () => applyPreset(getActiveDefaults()));
+    }
+
+    function updateNameDisplay(name) {
+      const trimmed = name.trim();
+      if (!trimmed) {
+        cardName.textContent = '이름';
+        cardName.className = 'font-black tracking-[0.25em] leading-none whitespace-nowrap';
+      } else if (trimmed.length === 2) {
+        cardName.textContent = trimmed[0] + ' ' + trimmed[1];
+        cardName.className = 'font-black tracking-[0.18em] leading-none whitespace-nowrap';
+      } else if (trimmed.length === 3) {
+        cardName.textContent = trimmed;
+        cardName.className = 'font-black tracking-[0.06em] leading-none whitespace-nowrap';
+      } else {
+        cardName.textContent = trimmed;
+        cardName.className = 'font-black tracking-[0.02em] leading-none whitespace-nowrap';
+      }
+
+      // 현재 크기 및 선택된 색상 유지 적용
+      const nameSize = currentSizes.name || COMPONENT_CONFIGS.name.default;
+      cardName.style.fontSize = `${nameSize}px`;
+      cardName.style.color = currentNameColorHex;
+    }
+
+    // 초기 로딩: 저장된 기본값 또는 최적 추천값 자동 적용
+    applyPreset(getActiveDefaults());
+    updateNameDisplay(inputName.value);
+    updateNameDisplay(inputName.value);
+
+    inputName.addEventListener('input', (e) => {
+      updateNameDisplay(e.target.value);
+    });
+
+    inputPhone.addEventListener('input', (e) => {
+      const val = e.target.value.trim();
+      cardPhone.textContent = val || '010-2687-7190';
+    });
+
+    // 4. 고해상도 JPG 다운로드 기능 (가로 9cm x 세로 5cm 비율, scale 3 = 2700 x 1500px 300DPI+ 인쇄급 화질)
+    btnDownload.addEventListener('click', async () => {
+      const card = document.getElementById('business-card');
+      const originalBtnHtml = btnDownload.innerHTML;
+
+      try {
+        btnDownload.disabled = true;
+        btnDownload.classList.add('opacity-80', 'cursor-not-allowed');
+        btnDownload.innerHTML = `<i class="fas fa-spinner fa-spin text-xs"></i><span>고해상도 저장 중...</span>`;
+
+        // 폰트 준비 완료 대기
+        if (document.fonts) {
+          await document.fonts.ready;
+        }
+
+        // html2canvas 고해상도 캡처 실행 (scale 3 = 2700 x 1500)
+        const canvas = await html2canvas(card, {
+          scale: 3,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#faf9f6',
+          logging: false,
+          onclone: (doc) => {
+            const cs = doc.getElementById('card-scale');
+            const cf = doc.getElementById('card-fit');
+            if (cs) cs.style.transform = 'none';
+            if (cf) {
+              cf.style.width = '900px';
+              cf.style.height = '500px';
+              cf.style.maxWidth = 'none';
+            }
+          }
+        });
+
+        // 우측 네이비 패널(배경, 궤도 곡선, 오렌지 포인트 행성, 영문 3줄)을 캔버스 2D에 정밀 벡터로 렌더링
+        // ※ 가로 9cm x 세로 5cm (900x500px) 비율에 맞추어 정밀 합성됩니다.
+        const s = canvas.width / 900; // 배율 (3)
+        const pw = 250; // 패널 폭
+        const ph = 500; // 패널 높이
+        const ox = (900 - pw) * s; // 우측 패널 시작 x
+        const ctx = canvas.getContext('2d');
+
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.translate(ox, 0);
+
+        // 클리핑: 우측 패널 영역만 렌더링
+        ctx.beginPath();
+        ctx.rect(0, 0, pw * s, ph * s);
+        ctx.clip();
+
+        // (1) 베이스 딥 네이비 선형 그라데이션
+        const baseGrad = ctx.createLinearGradient(0, 0, pw * 0.3 * s, ph * s);
+        baseGrad.addColorStop(0, '#1B3A6F');
+        baseGrad.addColorStop(0.45, '#122B55');
+        baseGrad.addColorStop(1, '#08142D');
+        ctx.fillStyle = baseGrad;
+        ctx.fillRect(0, 0, pw * s, ph * s);
+
+        // (2) 우측 상단 은은한 하이라이트 글로우
+        const topGlow = ctx.createRadialGradient(pw * 0.85 * s, ph * 0.08 * s, 0, pw * 0.85 * s, ph * 0.08 * s, pw * 1.2 * s);
+        topGlow.addColorStop(0, 'rgba(65, 110, 168, 0.55)');
+        topGlow.addColorStop(1, 'rgba(27, 58, 111, 0)');
+        ctx.fillStyle = topGlow;
+        ctx.fillRect(0, 0, pw * s, ph * s);
+
+        // (3) 동심 궤도 음영층 및 입체 크레센트 밴드 (중심 좌표: 254, 510)
+        const cx = 254 * s;
+        const cy = 510 * s;
+
+        // 크레센트 외곽 밴드
+        ctx.beginPath();
+        ctx.arc(cx, cy, 238 * s, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(24, 67, 125, 0.52)';
+        ctx.fill();
+
+        // 크레센트 안쪽 어두운 밴드
+        ctx.beginPath();
+        ctx.arc(cx, cy, 135 * s, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(14, 35, 74, 0.72)';
+        ctx.fill();
+
+        // 최하단 딥 다크 밴드
+        ctx.beginPath();
+        ctx.arc(cx, cy, 80 * s, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(7, 18, 42, 0.88)';
+        ctx.fill();
+
+        // (4) 동심 궤도 스트로크 라인 (Orbit Arcs)
+        const orbits = [
+          { r: 290.0, color: 'rgba(80, 126, 186, 0.35)', w: 1.2 },
+          { r: 238.0, color: 'rgba(92, 139, 204, 0.45)', w: 1.3 },
+          { r: 178.0, color: 'rgba(123, 168, 232, 0.75)', w: 1.6 },
+          { r: 116.0, color: 'rgba(80, 126, 186, 0.45)', w: 1.3 },
+          { r: 66.0, color: 'rgba(80, 126, 186, 0.30)', w: 1.2 }
+        ];
+
+        orbits.forEach(orb => {
+          ctx.beginPath();
+          ctx.arc(cx, cy, orb.r * s, 0, Math.PI * 2);
+          ctx.strokeStyle = orb.color;
+          ctx.lineWidth = orb.w * s;
+          ctx.stroke();
+        });
+
+        // (5) 주 궤도 위 오렌지 포인트 행성
+        const px = 110.0 * s;
+        const py = 405.0 * s;
+        const pr = 9.5 * s;
+        ctx.beginPath();
+        ctx.arc(px, py, pr, 0, Math.PI * 2);
+        ctx.fillStyle = '#F58220';
+        ctx.fill();
+
+        // (6) 상단 오렌지 캡슐 바 (42, 48, 40, 5)
+        const bx = 42.0 * s;
+        const by = 48.0 * s;
+        const bw = 40.0 * s;
+        const bh = 5.0 * s;
+        const br = 2.5 * s;
+        ctx.beginPath();
+        ctx.roundRect ? ctx.roundRect(bx, by, bw, bh, br) : ctx.rect(bx, by, bw, bh);
+        ctx.fillStyle = '#F58220';
+        ctx.fill();
+
+        // (7) 상단 영문 3줄 텍스트 (Outfit 볼드체, 자간 정밀 렌더링)
+        const texts = [
+          { text: 'DIGITAL', y: 80.0 * s, opacity: 1.0 },
+          { text: 'EDUCATION', y: 106.0 * s, opacity: 1.0 },
+          { text: 'SUPPORTERS', y: 132.0 * s, opacity: 0.88 }
+        ];
+
+        const fontSize = 16.0 * s;
+        const letterSpacing = 3.2 * s;
+        ctx.font = `800 ${fontSize}px "Outfit", "Noto Sans KR", sans-serif`;
+        ctx.textBaseline = 'alphabetic';
+
+        texts.forEach(item => {
+          ctx.fillStyle = `rgba(255, 255, 255, ${item.opacity})`;
+          let curX = bx;
+          for (let i = 0; i < item.text.length; i++) {
+            const ch = item.text[i];
+            ctx.fillText(ch, curX, item.y);
+            curX += ctx.measureText(ch).width + letterSpacing;
+          }
+        });
+
+        ctx.restore();
+
+        // 고품질 JPG 포맷 변환 (품질 0.96)
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.96);
+
+        // 파일명 생성: "[선생님이름]_디지털교육서포터즈_명함(9x5cm).jpg"
+        const teacherName = inputName.value.trim() || '디지털교육서포터즈';
+        const fileName = `${teacherName}_디지털교육서포터즈_명함(9x5cm).jpg`;
+
+        // 다운로드 실행
+        const link = document.createElement('a');
+        link.download = fileName;
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // 성공 상태 표시
+        btnDownload.innerHTML = `<i class="fas fa-check text-xs text-green-300"></i><span>저장 완료!</span>`;
+      } catch (err) {
+        console.error('명함 이미지 생성 오류:', err);
+        alert('명함 이미지 생성 중 문제가 발생했습니다: ' + err.message);
+        btnDownload.innerHTML = originalBtnHtml;
+      } finally {
+        setTimeout(() => {
+          btnDownload.disabled = false;
+          btnDownload.classList.remove('opacity-80', 'cursor-not-allowed');
+          btnDownload.innerHTML = originalBtnHtml;
+        }, 1800);
+      }
+    });
+  </script>
+</body>
+
+</html>
