@@ -151,16 +151,16 @@
           <span>이름 폰트색 (회색계열)</span>
         </label>
         <span id="preview-name-color" class="w-4 h-4 rounded-full border border-slate-300 shadow-xs inline-block"
-          style="background-color: #252E3F;"></span>
+          style="background-color: #151E2E;"></span>
         <span id="badge-name-color"
-          class="text-[11px] font-extrabold text-[#13386E] font-mono bg-white border border-slate-200 px-2 py-0.5 rounded">#252E3F
+          class="text-[11px] font-extrabold text-[#13386E] font-mono bg-white border border-slate-200 px-2 py-0.5 rounded">#151E2E
           (다크 차콜)</span>
       </div>
 
       <div class="flex-1 flex items-center space-x-2.5 max-w-[420px]">
         <span class="text-[10px] font-bold text-slate-500 whitespace-nowrap">블랙</span>
         <div class="relative flex-1 flex items-center">
-          <input type="range" id="range-name-color" min="0" max="100" step="1" value="16"
+          <input type="range" id="range-name-color" min="0" max="100" step="1" value="4"
             class="w-full h-2 rounded-lg appearance-none cursor-pointer name-color-slider" title="이름 폰트색 회색조 조절 슬라이더">
         </div>
         <span class="text-[10px] font-bold text-slate-500 whitespace-nowrap">밝은 회색</span>
@@ -170,7 +170,7 @@
       <div class="flex items-center space-x-1 shrink-0">
         <button type="button"
           class="btn-gray-preset px-2 py-1 text-[11px] font-bold bg-blue-50 border border-blue-200 rounded-lg text-[#13386E] shadow-xs transition-all active:scale-95"
-          data-val="16">다크 차콜(#252E3F)</button>
+          data-val="4">다크 차콜(#151E2E)</button>
         <button type="button"
           class="btn-gray-preset px-2 py-1 text-[11px] font-medium bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-slate-700 shadow-xs transition-all active:scale-95"
           data-val="0">기본 블랙</button>
@@ -438,7 +438,7 @@
           <div class="mt-1">
             <div class="flex items-baseline flex-wrap">
               <div id="card-name"
-                class="text-[58px] font-black tracking-[0.25em] text-[#252E3F] leading-none whitespace-nowrap">표 영</div>
+                class="text-[58px] font-black tracking-[0.25em] text-[#151E2E] leading-none whitespace-nowrap">표 영</div>
               <div id="card-title"
                 class="text-[33px] font-extrabold text-[#13386E] ml-6 whitespace-nowrap tracking-[-0.01em] pb-0.5">
                 디지털교육서포터즈</div>
@@ -540,7 +540,7 @@
     const cardPhone = document.getElementById('card-phone');
     const btnDownload = document.getElementById('btn-download');
 
-    // 최적 기본값 프리셋 (사용자 설정값: 로고 60px, 기관명 27px, 성함 58px, 직책 33px, 부제 21px, 연락처 29.5px, 이름색 다크차콜 #252E3F)
+    // 최적 기본값 프리셋 (사용자 설정값: 로고 60px, 기관명 27px, 성함 58px, 직책 33px, 부제 21px, 연락처 29.5px, 이름색 다크차콜 #151E2E)
     const OPTIMAL_PRESET = {
       sizes: {
         logo: 60,
@@ -550,7 +550,7 @@
         slogan: 21,
         contact: 29.5
       },
-      nameColorPercent: 16 // #252E3F (다크 차콜)
+      nameColorPercent: 4 // #151E2E (다크 차콜)
     };
 
     // 4. 각 컴포넌트별 크기 조절 관리
@@ -713,8 +713,8 @@
     });
 
     // 5. 이름 폰트색 (회색계열) 슬라이더 컨트롤
-    let currentNameColorHex = '#252E3F';
-    let currentNameColorPercent = 16;
+    let currentNameColorHex = '#151E2E';
+    let currentNameColorPercent = 4;
 
     function calculateGrayColor(percent) {
       const t = Math.max(0, Math.min(100, percent)) / 100;
@@ -769,7 +769,7 @@
     });
 
     // 6. 기본값 저장 및 불러오기 (localStorage 연동)
-    const STORAGE_KEY = 'ds_card_custom_defaults_v1';
+    const STORAGE_KEY = 'ds_card_custom_defaults_v2';
 
     function saveCurrentAsDefault() {
       const customDefault = {
